@@ -11,9 +11,11 @@ import MyStatusBar from './helper/MyStatusBar';
 export default class App extends Component {
   constructor(props) {
     super(props);
+    this.signIn = this.signIn.bind(this);
   }
   signIn() {
-    Alert.alert('signIn')
+    const { navigation } = this.props;
+    // navigation.navigate('DriveDetails');
   }
   render() {
     const { navigate } = this.props.navigation;
