@@ -6,6 +6,7 @@ import {
   TouchableHighlight,
   Alert
 } from 'react-native';
+import MyStatusBar from './helper/MyStatusBar';
 
 export default class App extends Component {
   constructor(props) {
@@ -18,6 +19,7 @@ export default class App extends Component {
     const { navigate } = this.props.navigation;
     return (
       <React.Fragment>
+          <MyStatusBar />
           <View style={styles.container}>
             <View style={styles.welcomeContainer}>
               <Text style={styles.welcomeText}>WELCOME TO DRIVE</Text>
