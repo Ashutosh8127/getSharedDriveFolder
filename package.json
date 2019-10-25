@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@react-native-community/google-signin": "^3.0.3",
+    "mobx": "^5.14.2",
+    "mobx-react": "^6.1.4",
     "react": "16.9.0",
     "react-native": "0.61.2",
     "react-native-fs": "^2.16.1",

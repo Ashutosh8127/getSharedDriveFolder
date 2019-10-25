@@ -18,7 +18,6 @@ export default class App extends Component {
         token: null
     }
     this.signIn = this.signIn.bind(this);
-    this.getFile = this.getFile.bind(this);
   }
   async componentDidMount() {
     this._configureGoogleSignIn();
@@ -29,13 +28,6 @@ export default class App extends Component {
       webClientId: '30070897701-bu6v9iqdnp370kd40f2uj00qbcvjivl6.apps.googleusercontent.com',
       offlineAccess: false,
     });
-  }
-  getFile = async () => {
-    api.setApiToken(this.state.token)
-    api.getFile()
-    .then((res) => {
-      console.log(res);
-    })
   }
   signIn = async () => {
     const { navigation } = this.props;
@@ -59,8 +51,8 @@ export default class App extends Component {
                     token: isSignedIn.accessToken
                 })
             }
+          navigation.navigate("DriveDetails", {'token': 'avjaah'});
         }
-         // navigation.navigate("DriveDetails");
       } catch (error) {
         if (error.code === statusCodes.SIGN_IN_CANCELLED) {
           // sign in was cancelled
@@ -74,7 +66,6 @@ export default class App extends Component {
           Alert.alert('Something went wrong', error.toString());
         }
       }
-    // navigation.navigate('DriveDetails');
   }
   render() {
     const { navigate } = this.props.navigation;
@@ -87,13 +78,6 @@ export default class App extends Component {
             </View>
             <TouchableHighlight
               onPress={this.signIn}
-              style={styles.driveButton}
-              underlayColor={"#00aeef"}
-            >
-              <Text style={styles.driveButtonText}>Check Drive Content</Text>
-            </TouchableHighlight>
-            <TouchableHighlight
-              onPress={this.getFile}
               style={styles.driveButton}
               underlayColor={"#00aeef"}
             >

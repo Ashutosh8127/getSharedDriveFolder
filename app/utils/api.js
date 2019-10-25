@@ -1,10 +1,8 @@
 let apiToken = null;
 const url = 'https://www.googleapis.com/drive/v3/';
+const childrenUrl = 'https://www.googleapis.com/drive/v2/';
 
 export var api = {
-    queryParams() {
-        return encodeURIComponent("1QHiLM0oX9c4vW-DpAeJ2tEaW9q7FPDvp")
-    },
     setApiToken(token) {
         apiToken = token
     },
@@ -17,7 +15,6 @@ export var api = {
         }
     },
     parseAndHandleErrors(response) {
-        console.log(response)
         if (response.ok) {
             return response.json()
         }
@@ -26,26 +23,20 @@ export var api = {
                 throw new Error(JSON.stringify(error))
             })
     },
-    getFile() {
-        const qParams = this.queryParams()
+    getFile(id) {
         const options = this.configureGetOptions()
-        return fetch(`${url}files/${qParams}`, options)
+        return fetch(`${url}files/${encodeURIComponent(id)}`, options)
             .then(this.parseAndHandleErrors)
             .then((body) => {
-                console.log(body)
-                if (body && body.files && body.files.length > 0) return body.files[0]
-                return null
+                return body
             })
     },
-    getChildFolder() {
-        const qParams = this.queryParams()
+    getChildFolder(id) {
         const options = this.configureGetOptions()
-        return fetch(`${url}files/${qParams}/children`, options)
+        return fetch(`${childrenUrl}files/${encodeURIComponent(id)}/children`, options)
             .then(this.parseAndHandleErrors)
             .then((body) => {
-                console.log(body)
-                if (body && body.files && body.files.length > 0) return body.files[0]
-                return null
+                return body.items;
             })
     }
 }
