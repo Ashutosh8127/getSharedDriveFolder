@@ -3,9 +3,11 @@ const url = 'https://www.googleapis.com/drive/v3/';
 const childrenUrl = 'https://www.googleapis.com/drive/v2/';
 
 export var api = {
+    //set the user api token
     setApiToken(token) {
         apiToken = token
     },
+    //get method heder setup
     configureGetOptions() {
         const headers = new Headers()
         headers.append('Authorization', `Bearer ${apiToken}`)
@@ -14,6 +16,7 @@ export var api = {
             headers,
         }
     },
+    //for user error handling
     parseAndHandleErrors(response) {
         if (response.ok) {
             return response.json()

@@ -1,81 +1,90 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, TouchableHighlight, TouchableOpacity,Modal } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator,TouchableHighlight, TouchableOpacity, Modal , FlatList} from 'react-native';
 import MyStatusBar from './helper/MyStatusBar';
 import { api } from '../utils/api';
 import { GoogleSignin, statusCodes } from '@react-native-community/google-signin';
+import { inject, observer } from "mobx-react";
 
+@inject('DriveStore')
+@observer
 export default class DriveDetails extends Component {
     constructor(props) {
       super(props);
-      this.state = {
-        isVisible: false,
-        file: null,
-        DropDown: [],
-        isVisibleContent: false,
-        DropDownContent: []
-      }
+      
     }
     componentDidMount() {
-      const { navigation } = this.props;
+      const { DriveStore } = this.props;
+       // for start the activityindicatr
+      DriveStore.isRenderLoading(true);
       const token = GoogleSignin.getTokens()
       .then((res) => {
+        //api token set for api call
         api.setApiToken(res.accessToken)
         api.getFile("1QHiLM0oX9c4vW-DpAeJ2tEaW9q7FPDvp")
         .then((res) => {
-          this.setState({
-            file: {name: res.name, id: res.id}
-          })
+          DriveStore.addFile({name: res.name, id: res.id})
+           // for stop the activityindicatr
+          DriveStore.isRenderLoading(false);
         })
       })
     }
+    
     getDropDownList() {
+      const { DriveStore } = this.props;
+       // for rendering the activityindicatr
+      DriveStore.isRenderLoading(true);
       const token = GoogleSignin.getTokens()
       .then((res) => {
         api.setApiToken(res.accessToken)
-        api.getChildFolder(this.state.file.id)
+        api.getChildFolder(DriveStore.file.id)
         .then((res) => {
           res.map(res => {
             api.getFile(res.id)
             .then((res) => {
-              this.setState({
-                DropDown: [...this.state.DropDown,{name: res.name, id: res.id}],
-              })
+              DriveStore.addDropDownList({name: res.name, id: res.id})
+              // for stop the activityindicatr
+              DriveStore.isRenderLoading(false);
             })
-          })
-          this.setState({
-            isVisible: true
           })
         })
       })
+      DriveStore.isVisible();
     }
-    truncatetable() {
-      this.setState({DropDownContent: [] })
-    }
+    //child component child list 
     getContentList(id) {
-      console.log('hii')
+      const { DriveStore } = this.props;
+      // for rendering the activityindicatr
+      DriveStore.isRenderLoading(true);
+      DriveStore.DropDownContent.clear();
       const token = GoogleSignin.getTokens()
       .then((res) => {
+        //api token set for api call
         api.setApiToken(res.accessToken)
+        //drive api call
         api.getChildFolder(id)
         .then((res) => {
           res.map(res => {
+            //get drive folder name by id
             api.getFile(res.id)
             .then((res) => {
-              this.setState({
-                DropDownContent: [...this.state.DropDownContent,{name: res.name, id: res.id}],
-              })
+              //set the data
+              DriveStore.addDropDownContent({name: res.name, id: res.id})
+              // for stop the activityindicatr
+              DriveStore.isRenderLoading(false);
             })
           })
         })
       })
     }
+    //loading children folder name
     renderDropDown() {
-      const { isVisible, DropDown } = this.state;
+      const { DriveStore } = this.props
+      const DropDown = DriveStore.DropDown;
       return (
           <View style={styles.DropDown}>
             <Modal visible={true} transparent={true} onRequestClose={() => console.log('close')}>
               <View style={styles.DropDownListContainer}>
-                <Text style={styles.SelectText}>Please Select From DropDown</Text>
+                <Text style={styles.SelectText}>Please Select Folder</Text>
                 {
                   DropDown && DropDown.map(item => (
                     <TouchableOpacity 
@@ -87,36 +96,44 @@ export default class DriveDetails extends Component {
                     </TouchableOpacity>
                   ))
                 }
-                <TouchableHighlight style={styles.CancelButton} onPress={this.truncatetable.bind(this)} >
-                    <Text>Cancel</Text>
-                </TouchableHighlight>
               </View>
             </Modal>
           </View>
       )
     }
-    renderContent() {
-      const { isVisibleContent, DropDownContent } = this.state;
-      return (
-          <View style={styles.ContentDropDown}>
-            <Modal visible={true} transparent={true} onRequestClose={() => console.log('close')}>
-              <View style={styles.ContentDropDownListContainer}>
-                {
-                  DropDownContent && DropDownContent.map(item => (
-                      <Text style={styles.ContentSelect} key={item.id}>{item.name}</Text>
-                  ))
-                }
-              </View>
-            </Modal>
-          </View>
-      )
+    backOnHome() {
+      const { navigation } = this.props;
+      navigation.navigate("Home");
     }
     render() {
-      const { isVisible , file, isVisibleContent, DropDownContent} = this.state;
+      const { DriveStore } = this.props
+      const file = DriveStore.file;
+      const isVisibleDropdown = DriveStore.isVisibleDropdown;
+      const isVisibleContent = DriveStore.DropDownContent.length > 0 ? true : false;
+      var showLoading = (
+        DriveStore.isLoading ?
+        (
+        <ActivityIndicator
+          animating={DriveStore.isLoading}
+          size={'large'}
+          color='#00aeef'
+        />
+        ) :
+        null
+      );
         return (  
             <React.Fragment>
               <MyStatusBar />
-              <View style={styles.container}> 
+              <View style={{ height: 30, backgroundColor: '#00aeef', paddingLeft: 20}}>
+                <TouchableHighlight 
+                  onPress={this.backOnHome.bind(this)}
+                  style={{width: 100}}
+                >
+                  <Text style={{ fontSize: 16, fontWeight: 'bold', color: 'white'}}>Back</Text>
+                </TouchableHighlight>
+              </View>
+              
+              <View style={styles.container}>
                 {file != null ? 
                   <TouchableHighlight 
                     style={styles.appFolder}
@@ -127,17 +144,31 @@ export default class DriveDetails extends Component {
                   </TouchableHighlight> : null
                 }
                 <View>
-                {isVisible && isVisible ? 
+                {isVisibleDropdown ? 
                   this.renderDropDown() :
                   null
                 }
                 </View>
-                <View>
-                {DropDownContent && DropDownContent.length > 0 ? 
-                  this.renderContent() :
+                <View style={{justifyContent: 'center'}}> 
+                  {showLoading}
+                </View>
+                {isVisibleContent ?
+                  <View style={styles.ContentDropDownListContainer}>
+                    <Text style={styles.SelectText} >Available Child Content</Text>
+                    <FlatList
+                      data={DriveStore.DropDownContent}
+                      renderItem={({item, index}) => (
+                          <View style={{margin: 5,height: 35, borderBottomWidth: 1, width: 200, justifyContent: 'center'}} key={index}>
+                            <Text style={styles.ContentSelect} >{item.name}</Text>
+                          </View>
+                        )
+                      }
+                      keyExtractor={item => item.id}
+                    />
+                  </View>
+                  :
                   null
                 }
-                </View>
               </View>
             </React.Fragment>
         );
@@ -168,7 +199,7 @@ const styles = StyleSheet.create({
     },
     DropDownListContainer: {
       position: 'absolute',
-      top: 200,
+      top: 150,
       right: 20,
       left: 20,
       alignItems: 'center',
@@ -201,15 +232,11 @@ const styles = StyleSheet.create({
       marginBottom: 20,
     },
     ContentDropDownListContainer: {
-      position: 'absolute',
-      bottom: 20,
-      right: 20,
-      left: 20,
+      paddingTop: 300,
       alignItems: 'center',
-      marginBottom: 20
     },
     ContentSelect: {
-
+      textAlign: 'center'
     },
     ContentCancelButton: {
 

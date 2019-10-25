@@ -9,13 +9,17 @@
 import React, { Component } from 'react';
 import AppContainer from './app/utils/navigator/navigation';
 import { useScreens } from 'react-native-screens';
+import {Provider} from 'mobx-react';
+import DriveStore from './app/utils/db/DriveStore';
 
 useScreens();
 
 export default class App extends Component {
   render() {
     return (
-      <AppContainer />
-    );
+      <Provider DriveStore={DriveStore}>
+        <AppContainer />
+      </Provider>
+    );  
   }
 }

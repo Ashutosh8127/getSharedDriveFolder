@@ -14,9 +14,6 @@ import GDrive from "react-native-google-drive-api-wrapper";
 export default class App extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-        token: null
-    }
     this.signIn = this.signIn.bind(this);
   }
   async componentDidMount() {
@@ -29,29 +26,29 @@ export default class App extends Component {
       offlineAccess: false,
     });
   }
+  //sign in function user google login and drive api
   signIn = async () => {
     const { navigation } = this.props;
     try {
+      // is checked that user has google play service or not
         await GoogleSignin.hasPlayServices();
         const userInfo = await GoogleSignin.signIn();
-        
+        //drive configuration
         const drive = await GoogleSignin.configure({
           scopes: ['https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/drive.file', 'https://www.googleapis.com/auth/drive.appdata', 'https://www.googleapis.com/auth/drive.metadata'],
           shouldFetchBasicProfile: true,
           webClientId: '30070897701-bu6v9iqdnp370kd40f2uj00qbcvjivl6.apps.googleusercontent.com',
           offlineAccess: true
         });
+        //is user is signed in get user token
         const isSignedIn = await GoogleSignin.getTokens();
-        console.log(isSignedIn);
         if(isSignedIn) {
             GDrive.setAccessToken(isSignedIn);
             GDrive.init();
             if(GDrive.isInitialized()) {
-                this.setState({
-                    token: isSignedIn.accessToken
-                })
+                //navigate user to next screen
+                navigation.navigate("DriveDetails");
             }
-          navigation.navigate("DriveDetails", {'token': 'avjaah'});
         }
       } catch (error) {
         if (error.code === statusCodes.SIGN_IN_CANCELLED) {
