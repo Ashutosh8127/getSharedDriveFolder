@@ -22,7 +22,7 @@ export default class App extends Component {
   _configureGoogleSignIn() {
     GoogleSignin.configure({
       scopes: ['https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/drive.file','https://www.googleapis.com/auth/drive.appdata' , 'https://www.googleapis.com/auth/drive.metadata'],
-      webClientId: '30070897701-bu6v9iqdnp370kd40f2uj00qbcvjivl6.apps.googleusercontent.com',
+      webClientId: '956766912826-vni0r8s6i312qkeiqj387a63sg2khrmo.apps.googleusercontent.com',
       offlineAccess: false,
     });
   }
@@ -37,7 +37,7 @@ export default class App extends Component {
         const drive = await GoogleSignin.configure({
           scopes: ['https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/drive.file', 'https://www.googleapis.com/auth/drive.appdata', 'https://www.googleapis.com/auth/drive.metadata'],
           shouldFetchBasicProfile: true,
-          webClientId: '30070897701-bu6v9iqdnp370kd40f2uj00qbcvjivl6.apps.googleusercontent.com',
+          webClientId: '956766912826-vni0r8s6i312qkeiqj387a63sg2khrmo.apps.googleusercontent.com',
           offlineAccess: true
         });
         //is user is signed in get user token
