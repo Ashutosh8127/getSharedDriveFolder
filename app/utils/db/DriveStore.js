@@ -19,7 +19,7 @@ class Drive {
         this.DropDownContent.push(dropDownContent);
     }
     @action isVisible = () => {
-        this.isVisibleDropdown = !this.isVisibleDropdown;
+        this.isVisibleDropdown = true;
     }
     @action isRenderLoading = (value) => {
         this.isLoading = value;

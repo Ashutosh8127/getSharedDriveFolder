@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator,TouchableHighlight, TouchableOpacity, Modal , FlatList} from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator,TouchableHighlight, TouchableOpacity , FlatList} from 'react-native';
 import MyStatusBar from './helper/MyStatusBar';
 import { api } from '../utils/api';
 import { GoogleSignin, statusCodes } from '@react-native-community/google-signin';
@@ -33,6 +33,7 @@ export default class DriveDetails extends Component {
       const { DriveStore } = this.props;
        // for rendering the activityindicatr
       DriveStore.isRenderLoading(true);
+      DriveStore.DropDown.clear();
       const token = GoogleSignin.getTokens()
       .then((res) => {
         api.setApiToken(res.accessToken)
@@ -82,22 +83,20 @@ export default class DriveDetails extends Component {
       const DropDown = DriveStore.DropDown;
       return (
           <View style={styles.DropDown}>
-            <Modal visible={true} transparent={true} onRequestClose={() => console.log('close')}>
               <View style={styles.DropDownListContainer}>
                 <Text style={styles.SelectText}>Please Select Folder</Text>
                 {
                   DropDown && DropDown.map(item => (
-                    <TouchableOpacity 
+                    <TouchableHighlight 
                     style={styles.SelectOption} 
                     key={item.id}
                     onPress={this.getContentList.bind(this, item.id)}
                     >
                       <Text style={styles.Select}>{item.name}</Text>
-                    </TouchableOpacity>
+                    </TouchableHighlight>
                   ))
                 }
               </View>
-            </Modal>
           </View>
       )
     }
@@ -192,31 +191,28 @@ const styles = StyleSheet.create({
       textAlign: 'center'
     },
     DropDown: {
-      marginTop: 10
+      alignItems: 'center',
+      marginTop: 50
     },
     DropDownModal: {
 
     },
     DropDownListContainer: {
-      position: 'absolute',
-      top: 150,
-      right: 20,
-      left: 20,
-      alignItems: 'center',
-      marginBottom: 20
+      justifyContent: 'center',
+      alignItems: 'center'
     },
     SelectText: {
+      textAlign: 'center',
       fontSize: 16,
       color: 'lightgray'
     },
     SelectOption: {
       marginTop: 5,
-      paddingTop: 4,
-      paddingBottom: 4,
       alignItems: 'center',
       height: 35,
       width: 200,
       borderWidth: 1,
+      justifyContent: 'center',
     },
     Select: {
 
@@ -232,7 +228,7 @@ const styles = StyleSheet.create({
       marginBottom: 20,
     },
     ContentDropDownListContainer: {
-      paddingTop: 300,
+      paddingTop: 100,
       alignItems: 'center',
     },
     ContentSelect: {
